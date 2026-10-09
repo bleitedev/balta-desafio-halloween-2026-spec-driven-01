@@ -24,9 +24,12 @@ public class GeneratePasswordCommandHandlerTests
         Assert.True(response.Password.Length >= 16);
         Assert.DoesNotContain(response.Password, char.IsWhiteSpace);
         Assert.Contains(response.Password, c => !char.IsLetterOrDigit(c));
-        Assert.True(repository.AddedRecords.Count == 1);
+        Assert.True(response.CreatedAtUtc <= DateTimeOffset.UtcNow);
+        Assert.True(response.CreatedAtUtc.Offset == TimeSpan.Zero);
+        Assert.Single(repository.AddedRecords);
         Assert.Equal(repository.AddedRecords[0].Id, response.Id);
         Assert.Equal(repository.AddedRecords[0].Value, response.Password);
+        Assert.Equal(repository.AddedRecords[0].CreatedAtUtc, response.CreatedAtUtc);
         Assert.Equal(1, unitOfWork.CommitCount);
     }
 
